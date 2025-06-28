@@ -1,0 +1,14 @@
+---
+argument_specs:
+  main:
+    options:
+      network_wifi_ssid:
+        type: "str"
+        description: "The WIFI SSID to be configure when provided"
+        required: false
+        default: ""
+      network_wifi_pass:
+        type: "str"
+        description: "The WIFI Passphrase to be configure when provided"
+        required: false
+        default: ""

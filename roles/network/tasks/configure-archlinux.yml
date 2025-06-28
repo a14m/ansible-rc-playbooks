@@ -1,0 +1,82 @@
+---
+- name: "Ensure network_packages installed"
+  community.general.pacman:
+    name: "{{ network_packages }}"
+    state: present
+
+- name: "(chroot): Ensure network_services enabled"
+  # noqa: command-instead-of-module intentional isnide chroot
+  ansible.builtin.command:
+    cmd: "systemctl enable {{ item }}"
+  changed_when: true
+  with_items: "{{ network_services }}"
+  when: ansible_is_chroot
+
+- name: "Ensure network_services enabled"
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+    state: "started"
+  with_items: "{{ network_services }}"
+  when: not ansible_is_chroot
+
+- name: "Configure NetworkManager"
+  notify:
+    - "Restart NetworkManager"
+    - "Reload systemd"
+  block:
+    - name: "Configure NetworkManager connectivity"
+      ansible.builtin.copy:
+        dest: "/etc/NetworkManager/conf.d/20-connectivity.conf"
+        mode: "0640"
+        content: |
+          [connectivity]
+          uri=https://ping.archlinux.org
+
+    - name: "Configure NetworkManager DHCP client"
+      ansible.builtin.copy:
+        dest: "/etc/NetworkManager/conf.d/99-dhcp-client.conf"
+        mode: "0640"
+        content: |
+          [main]
+          dhcp=dhcpcd
+
+    - name: "Configure NetworkManager Captive Portals"
+      ansible.builtin.get_url:
+        dest: "/etc/NetworkManager/dispatcher.d/90-open_captive_portal"
+        # yamllint disable-line
+        url: "https://raw.githubusercontent.com/Seme4eg/captive-portal-sh/04751034437b6abd92647cab1b22cef586c86f4e/90-open_captive_portal"
+        checksum: "sha1:75f4c827939e7dd433357ab4776c787be02c485b"
+        mode: "0750"
+
+    - name: "Configure MAC address randomization"
+      ansible.builtin.copy:
+        dest: "/etc/NetworkManager/conf.d/99-wifi-rand-mac.conf"
+        mode: "0640"
+        content: |
+          [device-mac-randomization]
+          wifi.scan-rand-mac-address=yes
+
+          [connection-mac-randomization]
+          # Random MAC on every Ethernet connection
+          ethernet.cloned-mac-address=random
+          # Random (but permanent) MAC on every wifi network
+          wifi.cloned-mac-address=stable
+
+    - name: "Configure NetworkManager ipv6 privacy"
+      ansible.builtin.copy:
+        dest: "/etc/NetworkManager/conf.d/99-ip6-privacy.conf"
+        mode: "0640"
+        content: |
+          [connection]
+          ipv6.ip6-privacy=2
+          ipv6.dhcp-duid=stable-uuid
+
+    - name: "Configure wifi connection"
+      ansible.builtin.template:
+        src: wifi-connection.nmconnection.j2
+        dest: "/etc/NetworkManager/system-connections/{{ network_wifi_ssid }}.nmconnection"
+        mode: "0600"
+        owner: "root"
+        group: "root"
+      when: network_wifi_ssid != ""

@@ -2,3 +2,7 @@
 - name: Distro Configure
   hosts:
     - archlinux.local
+  roles:
+    - role: network
+        network_wifi_ssid: "<Change_Me>"
+        network_wifi_pass: "<Change_Me>"

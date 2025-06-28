@@ -1,0 +1,43 @@
+---
+name: "CI"
+'on': ["push", "pull_request"]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: pip3 install yamllint ansible-lint
+      - name: Run
+        run: |
+          yamllint .
+          ansible-lint
+
+  playbook-configure:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        molecule_distro:
+          - distro: archlinux
+            command: "/usr/sbin/init"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: pip3 install ansible molecule molecule-plugins[podman]
+      - name: Run
+        env:
+          PY_COLORS: 1
+          ANSIBLE_FORCE_COLOR: 1
+        run: >-
+          molecule --version &&
+          ansible --version &&
+          MOLECULE_COMMAND=${{ matrix.molecule_distro.command }}
+          MOLECULE_DISTRO=${{ matrix.molecule_distro.distro }}
+          molecule test -s configure

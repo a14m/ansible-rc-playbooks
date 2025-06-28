@@ -1,0 +1,30 @@
+---
+role_name_check: 1
+dependency:
+  name: galaxy
+  options:
+    ignore-errors: true
+    requirements-file: "requirements.yml"
+driver:
+  name: podman
+platforms:
+  - name: instance
+    image: ${MOLECULE_DISTRO:-archlinux}
+    dockerfile: Dockerfile.${MOLECULE_DISTRO:-archlinux}.j2
+    pre_build_image: false
+    privileged: true
+    command: ${MOLECULE_COMMAND:-""}
+    tmpfs:
+      "/tmp": "rw"
+      "/run": "rw,exec"
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_CONFIG: "../../ansible.cfg"
+    ANSIBLE_ROLES_PATH: "../../roles"
+  playbooks:
+    converge: converge.yml
+verifier:
+  name: ansible

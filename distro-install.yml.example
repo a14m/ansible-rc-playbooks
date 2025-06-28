@@ -1,0 +1,4 @@
+---
+- name: Distro Install
+  hosts:
+    - archiso.local

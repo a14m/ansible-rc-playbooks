@@ -1,0 +1,53 @@
+---
+- name: "Install archlinux packages"
+  ansible.builtin.include_tasks: "install-archlinux.yml"
+  when: ansible_os_family == "Archlinux"
+
+- name: "Setting user_groups"
+  ansible.builtin.set_fact:
+    sudo_group: "sudo"
+
+- name: "Configure permissions for {{ sudo_group }}"
+  community.general.sudoers:
+    name: "enable-sudo-group"
+    group: "{{ sudo_group }}"
+    commands: "ALL"
+    nopassword: false
+    sudoers_path: "/etc/sudoers.d"
+    state: present
+
+- name: "Ensure user_groups are created"
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - "{{ username }}"
+    - "{{ sudo_group }}"
+
+- name: "Create user {{ username }}"
+  ansible.builtin.user:
+    name: "{{ username }}"
+    append: false
+    create_home: true
+    generate_ssh_key: false
+    groups: "{{ [username, sudo_group] }}"
+    password: "{{ user_password }}"
+    state: "present"
+    update_password: "on_create"
+  register: user
+  notify: "Require password change"
+
+- name: "Create user ssh directory"
+  ansible.builtin.file:
+    path: "/home/{{ username }}/.ssh/"
+    mode: "0700"
+    owner: "{{ username }}"
+    state: "directory"
+
+- name: "Add user ssh authorized_keys"
+  ansible.builtin.copy:
+    dest: "/home/{{ username }}/.ssh/authorized_keys"
+    mode: "0600"
+    owner: "{{ username }}"
+    content: |
+      {{ user_public_keys | join('\n') }}

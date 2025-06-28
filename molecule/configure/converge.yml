@@ -1,5 +1,9 @@
 ---
 - name: Converge
   hosts: instance
+  vars:
+    username: test_user
+    ssh_port: 39901
   roles:
     - role: network
+    - role: ssh

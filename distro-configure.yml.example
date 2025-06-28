@@ -2,7 +2,11 @@
 - name: Distro Configure
   hosts:
     - archlinux.local
+  vars:
+    username: trovalds
+    ssh_port: 39901
   roles:
     - role: network
         network_wifi_ssid: "<Change_Me>"
         network_wifi_pass: "<Change_Me>"
+    - role: ssh

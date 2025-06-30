@@ -13,6 +13,7 @@
       vars:
         ssh_port: 39901
     - role: user
+      vars:
         user_public_keys:
           - "ssh-ed25519 AAAA...fMo"
           - "ssh-rsa AAAA...4I3"

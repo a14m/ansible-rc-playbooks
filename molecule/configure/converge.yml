@@ -3,8 +3,12 @@
   hosts: instance
   vars:
     username: test_user
-    ssh_port: 39901
   roles:
     - role: network
     - role: ssh
+      vars:
+        ssh_port: 1337
     - role: user
+      vars:
+        user_public_keys:
+          - "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3"

@@ -11,6 +11,10 @@ jobs:
           python-version: "3.x"
       - name: Install dependencies
         run: pip3 install yamllint ansible-lint
+      - name: Copy example files
+        run: |
+          cp distro-install.yml.example distro-install.yml
+          cp distro-configure.yml.example distro-configure.yml
       - name: Run
         run: |
           yamllint .

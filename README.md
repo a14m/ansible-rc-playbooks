@@ -10,6 +10,26 @@ Ansible roles and playbooks to install different distros and configure `.rc`.
 [sshpass]: https://man.freebsd.org/cgi/man.cgi?query=sshpass
 [ansible]: https://docs.ansible.com/ansible/latest/index.html
 
+## Playbook: distro-install
+
+### Boot distro live image
+
+- [Arch Linux](./archlinux.md)
+
+### Run
+
+```bash
+cp distro-install.yml.example distro-install.yml
+
+# Update distro-install.yml vars
+
+ansible-galaxy install -r requirements.yml
+
+ansible-playbook site.yml \
+  --ask-pass \
+  --limit live_environment
+```
+
 ## Playbook: distro-configure
 
 ```bash

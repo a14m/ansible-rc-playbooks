@@ -2,3 +2,45 @@
 - name: Distro Install
   hosts:
     - archiso.local
+  vars:
+    hostname: "archlinux.local"
+    partition_disk: "/dev/nvme0n1"
+    partition_wipe: true
+    partition_boot:
+      num: 1
+      name: "boot"
+      flags: [boot, esp]
+      part_start: "0%"
+      part_end: "1.0GiB"
+      fstype: "vfat"
+      fstype_opts: "-F 32"
+      dev: "{{ partition_disk }}p1"
+      mount_path: "/mnt/boot"
+      fstab_opts: "defaults,nodev,nosuid,noexec,umask=0077"
+    partition_swap:
+      num: 2
+      name: "swap"
+      flags: [swap]
+      part_start: "1.0GiB"
+      part_end: "5.0GiB"
+      fstype: "ext4"
+      dev: "{{ partition_disk }}p2"
+      mount_path: "none"
+    partition_root:
+      num: 3
+      name: "arch-root"
+      part_start: "5.0GiB"
+      part_end: "35.0GiB"
+      fstype: "ext4"
+      dev: "{{ partition_disk }}p3"
+      mount_path: "/mnt"
+    partition_extras:
+      - num: 4
+        name: "arch-home"
+        part_start: "35.0GiB"
+        part_end: "100%"
+        fstype: "ext4"
+        dev: "{{ partition_disk }}p4"
+        mount_path: "/mnt/home"
+  roles:
+    - role: partition

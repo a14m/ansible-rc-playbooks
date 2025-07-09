@@ -1,0 +1,28 @@
+---
+- name: Prepare
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: "Create virtual disk image"
+      become: true
+      community.general.filesize:
+        path: "/srv/vdd.img"
+        size: 4G
+        mode: "0755"
+        force: true
+
+    - name: "Create test_device (loop block device)"
+      become: true
+      ansible.builtin.command:
+        cmd: "losetup --show -Pf /srv/vdd.img"
+      register: loop_device
+      changed_when: true
+
+    - name: "Set test_device"
+      ansible.builtin.set_fact:
+        test_device: "{{ loop_device.stdout }}"
+        cacheable: true
+
+    - name: "Show test_device"
+      ansible.builtin.debug:
+        msg: "{{ test_device }}"

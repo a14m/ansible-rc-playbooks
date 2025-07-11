@@ -13,7 +13,7 @@
   # Ensure unmounting swap partition as it's mounted using swapon
   ansible.builtin.command:
     cmd: "swapoff {{ partition_swap.dev }}"
-  changed_when: true
+  changed_when: "'molecule-idempotence-notest' not in ansible_skip_tags"
   failed_when: false
 
 - name: "Ensure partitions are not mounted"
@@ -24,6 +24,7 @@
   # Ensure the /mnt/path is unmounted before /mnt (respect mount tree)
   # This ensures not getting error device is busy when unmounting
   with_items: "{{ partition_list | sort(attribute='mount_path') | reverse }}"
+  changed_when: "'molecule-idempotence-notest' not in ansible_skip_tags"
 
 - name: "Partition device: {{ partition_disk }}"
   community.general.parted:
@@ -44,16 +45,17 @@
     opts: "{{ item.fstype_opts | default(omit) }}"
     force: "{{ (item.name == partition_swap.name) | ternary(true, partition_wipe) }}"
   with_items: "{{ partition_list }}"
+  changed_when: "'molecule-idempotence-notest' not in ansible_skip_tags"
 
 - name: "Run mkswap"
   ansible.builtin.command:
     cmd: "mkswap {{ partition_swap.dev }}"
-  changed_when: true
+  changed_when: "'molecule-idempotence-notest' not in ansible_skip_tags"
 
 - name: "Run swapon {{ partition_swap.dev }}"
   ansible.builtin.command:
     cmd: "swapon {{ partition_swap.dev }}"
-  changed_when: true
+  changed_when: "'molecule-idempotence-notest' not in ansible_skip_tags"
 
 - name: "Mount partitions"
   ansible.posix.mount:
@@ -66,3 +68,4 @@
   when: item.name != partition_swap.name
   # Ensure the /mnt is mounted before /mnt/path (respect mount tree)
   with_items: "{{ partition_list | sort(attribute='mount_path') }}"
+  changed_when: "'molecule-idempotence-notest' not in ansible_skip_tags"

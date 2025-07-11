@@ -1,0 +1,55 @@
+---
+- name: "Set root,boot partition paths"
+  ansible.builtin.set_fact:
+    install_boot_path: "{{ partition_boot.mount_path }}"
+    install_root_path: "{{ partition_root.mount_path }}"
+
+- name: "Install archlinux tasks"
+  ansible.builtin.include_tasks: "install-archlinux.yml"
+  when: ansible_os_family == "Archlinux"
+
+- name: "Install ansible-core on live environment"
+  # Can't install ansible-core using package manager
+  # This resolve the "ERROR! ansible-galaxy requires resolvelib<1.1.1,>=0.5.3"
+  # where the python-resolvelib was updated but ansible package wasn't in the package managers
+  ansible.builtin.pip:
+    name: "ansible-core>=2.18"
+    state: "present"
+    break_system_packages: true
+
+- name: "Create /etc/ansible directory on live environment"
+  ansible.builtin.file:
+    path: "/etc/ansible"
+    mode: "0640"
+    state: "directory"
+
+- name: "Configure ansible hosts on live environment"
+  ansible.builtin.copy:
+    dest: "/etc/ansible/hosts"
+    mode: "0640"
+    content: |
+      [{{ hostname }}]
+      {{ install_root_path }} ansible_connection=chroot ansible_chroot_exe=arch-chroot
+
+- name: "Copy rc playbooks on live environment"
+  ansible.builtin.copy:
+    src: "{{ rc_playbooks_dir }}"
+    dest: "/opt/ansible-playbooks"
+    force: true
+    remote_src: false
+    mode: "0640"
+
+- name: "Download playbook dependencies on live environment"
+  ansible.builtin.command:
+    cmd: "ansible-galaxy install -r /opt/ansible-playbooks/requirements.yml"
+  changed_when: true
+
+- name: "Run configure playbook locally using chroot connection"
+  ansible.builtin.command:
+    cmd: "ansible-playbook /opt/ansible-playbooks/distro-configure.yml --limit {{ hostname }}"
+  register: playbook
+  changed_when: true
+
+- name: "Playbook stdout"
+  ansible.builtin.debug:
+    msg: "{{ playbook.stdout_lines }}"

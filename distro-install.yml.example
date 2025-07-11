@@ -44,3 +44,4 @@
         mount_path: "/mnt/home"
   roles:
     - role: partition
+    - role: install

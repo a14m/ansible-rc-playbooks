@@ -1,0 +1,71 @@
+---
+- name: "Run pacstrap"
+  ansible.builtin.command:
+    cmd: "pacstrap -K {{ install_root_path }} base linux linux-firmware"
+  changed_when: true
+
+- name: "Generate fstab"
+  ansible.builtin.shell:
+    cmd: "genfstab -U {{ install_root_path }} > {{ install_root_path }}/etc/fstab"
+  changed_when: true
+
+- name: "Install bootclt"
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} bootctl install"
+  changed_when: true
+
+- name: "Enable systemd-boot-update"
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} systemctl enable systemd-boot-update"
+  changed_when: false
+
+- name: "Configure machine hostname"
+  ansible.builtin.copy:
+    dest: "{{ install_root_path }}/etc/hostname"
+    mode: "0644"
+    content: |
+      {{ hostname }}
+
+- name: "Template systemd-boot files"
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  with_items:
+    - src: loader.conf.j2
+      dest: "{{ install_boot_path }}/loader/loader.conf"
+    - src: arch.conf.j2
+      dest: "{{ install_boot_path }}/loader/entries/arch.conf"
+
+- name: "Ensure ansible dependencies are installed on live environment"
+  community.general.pacman:
+    name:
+      - "python3"
+      - "python-pip"
+    state: present
+    update_cache: true
+
+- name: "Configure pacman in chroot"
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    remote_src: false
+    force: false
+    mode: "0644"
+  with_items:
+    - src: "/etc/pacman.conf"
+      dest: "{{ install_root_path }}/etc/pacman.conf"
+    - src: "/etc/pacman.d/mirrorlist"
+      dest: "{{ install_root_path }}/etc/pacman.d/mirrorlist"
+
+- name: "Ensure pacman is updated in chroot"
+  ansible.builtin.shell: |
+    arch-chroot {{ install_root_path }} pacman-key --init
+    arch-chroot {{ install_root_path }} pacman-key --populate
+    arch-chroot {{ install_root_path }} pacman -Syyu --noconfirm
+  changed_when: true
+
+- name: "Ensure python is installed in chroot"
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} pacman -S --noconfirm python3"
+  changed_when: true

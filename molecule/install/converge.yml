@@ -43,3 +43,4 @@
 
   roles:
     - role: partition
+    - role: install

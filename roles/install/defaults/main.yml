@@ -1,0 +1,3 @@
+---
+# noqa var-naming[no-role-prefix]
+rc_playbooks_dir: "{{ playbook_dir }}/"

@@ -6,7 +6,7 @@
     - name: "Create virtual disk image"
       become: true
       community.general.filesize:
-        path: "/srv/vdd.img"
+        path: "/opt/vdd.img"
         size: 4G
         mode: "0755"
         force: true
@@ -14,7 +14,7 @@
     - name: "Create test_device (loop block device)"
       become: true
       ansible.builtin.command:
-        cmd: "losetup --show -Pf /srv/vdd.img"
+        cmd: "losetup --show -Pf /opt/vdd.img"
       register: loop_device
       changed_when: true
 

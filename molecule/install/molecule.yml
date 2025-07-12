@@ -16,9 +16,9 @@ platforms:
     tmpfs:
       - "/tmp"
       - "/run"
+      - "/opt"
     volumes:
       - "/sys/fs/cgroup:/sys/fs/cgroup:rw"
-      - "/srv:/srv:rw"
       - "/dev:/dev:rw"
     cgroupns_mode: host
 provisioner:
@@ -29,8 +29,20 @@ provisioner:
     defaults:
       fact_caching: jsonfile
       fact_caching_connection: /tmp/facts_cache
-      fact_caching_timeout: 120
+      fact_caching_timeout: 600
   playbooks:
     converge: converge.yml
 verifier:
   name: ansible
+
+# disable idempotency test for this playbook as it is not idempotent in nature
+scenario:
+  name: install
+  test_sequence:
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy

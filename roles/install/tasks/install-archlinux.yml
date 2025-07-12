@@ -47,16 +47,11 @@
 
 - name: "Configure pacman in chroot"
   ansible.builtin.copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    remote_src: false
+    src: "/etc/pacman.conf"
+    dest: "{{ install_root_path }}/etc/pacman.conf"
+    remote_src: true
     force: false
     mode: "0644"
-  with_items:
-    - src: "/etc/pacman.conf"
-      dest: "{{ install_root_path }}/etc/pacman.conf"
-    - src: "/etc/pacman.d/mirrorlist"
-      dest: "{{ install_root_path }}/etc/pacman.d/mirrorlist"
 
 - name: "Ensure pacman is updated in chroot"
   ansible.builtin.shell: |

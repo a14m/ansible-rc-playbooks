@@ -19,13 +19,6 @@
     cmd: "arch-chroot {{ install_root_path }} systemctl enable systemd-boot-update"
   changed_when: false
 
-- name: "Configure machine hostname"
-  ansible.builtin.copy:
-    dest: "{{ install_root_path }}/etc/hostname"
-    mode: "0644"
-    content: |
-      {{ hostname }}
-
 - name: "Template systemd-boot files"
   ansible.builtin.template:
     src: "{{ item.src }}"

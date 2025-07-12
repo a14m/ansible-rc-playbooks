@@ -4,7 +4,7 @@ This role installs and configure the basic networking functionality of a linux d
 
 ## Role Variables
 
-- `hostname` the hostname to configure the distro installation with
+- `hostname` the distro linux network hostname to be used.
 - `rc_playbooks_dir` the root directory of the rc playbooks defaults the ansible playbook_dir variable
 - `partition_boot` the boot partition definition for role `partition`, to install bootloader
 - `partition_root` the root partition definition for role `partition`, to install distro root

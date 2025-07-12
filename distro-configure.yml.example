@@ -3,7 +3,7 @@
   hosts:
     - archlinux.local
   vars:
-    username: "<Change_Me>"
+    username: "test_user"
   roles:
     - role: network
       vars:

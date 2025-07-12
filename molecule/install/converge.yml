@@ -4,7 +4,7 @@
   gather_facts: true
   vars:
     rc_playbooks_dir: "{{ playbook_dir }}/../../"
-    hostname: "test.local"
+    hostname: "archlinux.local"
     partition_wipe: false
     partition_disk: "{{ test_device }}"
     partition_boot:

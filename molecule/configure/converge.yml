@@ -3,12 +3,12 @@
   hosts: instance
   vars:
     username: test_user
+    ssh_port: 1337
+    user_public_keys:
+      - "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3"
+    locales_timezone: "Europe/Berlin"
   roles:
     - role: network
     - role: ssh
-      vars:
-        ssh_port: 1337
     - role: user
-      vars:
-        user_public_keys:
-          - "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3"
+    - role: locales

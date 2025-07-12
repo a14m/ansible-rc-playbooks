@@ -1,0 +1,36 @@
+---
+argument_specs:
+  main:
+    options:
+      locales_list:
+        type: "list"
+        default: ["en_US.UTF-8 UTF-8"]
+        elements: "str"
+        description: "The default locales to generate"
+      locales_conf:
+        type: "dict"
+        options:
+          lang:
+            type: "str"
+            description: "configuration of LANG="
+            default: "en_US.UTF-8"
+          language:
+            type: "str"
+            description: "configuration of LANGUAGE="
+            default: "en_US.UTF-8"
+          lc_time:
+            type: "str"
+            description: "configuration of LC_TIME="
+            default: "en_KD.UTF-8"
+          time_style:
+            type: "str"
+            description: "configuration of TIME_STYLE="
+            default: "iso"
+          lc_collate:
+            type: "str"
+            description: "configuration of LC_COLLATE="
+            default: "c.UTF-8"
+      locales_timezone:
+        type: "str"
+        description: "timezone configuration to use"
+        default: "UTC"

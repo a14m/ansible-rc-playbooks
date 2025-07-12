@@ -25,7 +25,7 @@ cp distro-install.yml.example distro-install.yml
 
 ansible-galaxy install -r requirements.yml
 
-ansible-playbook site.yml \
+ansible-playbook distro-install.yml \
   --ask-pass \
   --limit live_environment
 ```
@@ -37,7 +37,7 @@ cp distro-configure.yml.example distro-configure.yml
 
 ansible-galaxy install -r requirements.yml
 
-ansible-playbook site.yml \
+ansible-playbook distro-configure.yml \
   --limit wlan \
   --extra-vars '{"network_wifi_ssid":"<WIFI_SSID>", "network_wifi_pass":"<WIFI_PASS>"}'
 ```

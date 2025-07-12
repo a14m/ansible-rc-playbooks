@@ -1,6 +1,0 @@
----
-- name: "Distro install"
-  import_playbook: distro-install.yml
-
-- name: "Distro configure"
-  import_playbook: distro-configure.yml

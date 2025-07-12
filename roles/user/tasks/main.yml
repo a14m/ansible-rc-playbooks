@@ -2,10 +2,12 @@
 - name: "Install archlinux packages"
   ansible.builtin.include_tasks: "install-archlinux.yml"
   when: ansible_os_family == "Archlinux"
+  tags: [required_for_boot]
 
 - name: "Setting user_groups"
   ansible.builtin.set_fact:
     sudo_group: "sudo"
+  tags: [required_for_boot]
 
 - name: "Configure permissions for {{ sudo_group }}"
   community.general.sudoers:
@@ -15,6 +17,7 @@
     nopassword: false
     sudoers_path: "/etc/sudoers.d"
     state: present
+  tags: [required_for_boot]
 
 - name: "Ensure user_groups are created"
   ansible.builtin.group:
@@ -23,6 +26,7 @@
   with_items:
     - "{{ username }}"
     - "{{ sudo_group }}"
+  tags: [required_for_boot]
 
 - name: "Create user {{ username }}"
   ansible.builtin.user:
@@ -36,6 +40,7 @@
     update_password: "on_create"
   register: user
   notify: "Require password change"
+  tags: [required_for_boot]
 
 - name: "Create user ssh directory"
   ansible.builtin.file:
@@ -43,6 +48,7 @@
     mode: "0700"
     owner: "{{ username }}"
     state: "directory"
+  tags: [required_for_boot]
 
 - name: "Add user ssh authorized_keys"
   ansible.builtin.copy:
@@ -51,3 +57,4 @@
     owner: "{{ username }}"
     content: |
       {{ user_public_keys | join('\n') }}
+  tags: [required_for_boot]

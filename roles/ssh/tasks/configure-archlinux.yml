@@ -3,6 +3,7 @@
   community.general.pacman:
     name: "{{ ssh_package_name }}"
     state: present
+  tags: [required_for_boot]
 
 - name: "Ensure sshd is enabled"
   ansible.builtin.service:
@@ -10,6 +11,7 @@
     state: "started"
     enabled: true
   when: not ansible_is_chroot
+  tags: [required_for_boot]
 
 - name: "(chroot): Ensure ssh_service enabled"
   # noqa: command-instead-of-module intentional isnide chroot
@@ -17,21 +19,25 @@
     cmd: "systemctl enable {{ ssh_service_name }}"
   when: ansible_is_chroot
   changed_when: true
+  tags: [required_for_boot]
 
 - name: "Generate /etc/ssh/ RSA host key"
   ansible.builtin.command:
     cmd: "ssh-keygen -q -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -C '' -N ''"
     creates: "/etc/ssh/ssh_host_rsa_key"
+  tags: [required_for_boot]
 
 - name: "Generate /etc/ssh/ ECDSA host key"
   ansible.builtin.command:
     cmd: "ssh-keygen -q -t ecdsa -b 521 -f /etc/ssh/ssh_host_ecdsa_key -C '' -N ''"
     creates: "/etc/ssh/ssh_host_ecdsa_key"
+  tags: [required_for_boot]
 
 - name: "Generate /etc/ssh/ Ed25519 host key"
   ansible.builtin.command:
     cmd: "ssh-keygen -q -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -C '' -N ''"
     creates: "/etc/ssh/ssh_host_ed25519_key"
+  tags: [required_for_boot]
 
 - name: "Configure ssh defaults"
   ansible.builtin.copy:
@@ -46,6 +52,7 @@
       HostKey /etc/ssh/ssh_host_rsa_key
       HostKey /etc/ssh/ssh_host_ecdsa_key
       HostKey /etc/ssh/ssh_host_ed25519_key
+  tags: [required_for_boot]
 
 - name: "Configure authentication policy"
   ansible.builtin.copy:
@@ -64,6 +71,7 @@
   notify:
     - "Reload systemd"
     - "Restart ssh"
+  tags: [required_for_boot]
 
 - name: "Add arg.username to allowed users"
   ansible.builtin.copy:
@@ -74,3 +82,4 @@
       AllowUsers {{ username }}
   notify:
     - "Restart ssh"
+  tags: [required_for_boot]

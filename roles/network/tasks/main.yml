@@ -6,10 +6,13 @@
     content: |
       {{ hostname }}
   when: hostname is defined
+  tags: [required_for_boot]
 
 - name: "Include OS-specific variables"
   ansible.builtin.include_vars: "{{ ansible_os_family | lower }}.yml"
+  tags: [required_for_boot]
 
 - name: "Configure archlinux network"
   ansible.builtin.include_tasks: configure-archlinux.yml
   when: ansible_os_family == "Archlinux"
+  tags: [required_for_boot]

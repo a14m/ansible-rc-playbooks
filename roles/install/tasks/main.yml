@@ -47,9 +47,10 @@
 - name: "Run configure playbook locally using chroot connection"
   ansible.builtin.command:
     cmd: |
-      ansible-playbook /opt/ansible-playbooks/distro-configure.yml \
-        --limit {{ hostname }} \
+      ansible-playbook /opt/ansible-playbooks/distro-configure.yml
+        --limit {{ hostname }}
         --extra-vars '{"hostname":"{{ hostname }}"}'
+        --tags 'required_for_boot'
   register: playbook
   changed_when: true
 

@@ -10,6 +10,7 @@
   tags: [required_for_boot]
 
 - name: "Configure permissions for {{ sudo_group }}"
+  become: true
   community.general.sudoers:
     name: "enable-sudo-group"
     group: "{{ sudo_group }}"
@@ -20,6 +21,7 @@
   tags: [required_for_boot]
 
 - name: "Ensure user_groups are created"
+  become: true
   ansible.builtin.group:
     name: "{{ item }}"
     state: "present"
@@ -29,6 +31,7 @@
   tags: [required_for_boot]
 
 - name: "Create user {{ username }}"
+  become: true
   ansible.builtin.user:
     name: "{{ username }}"
     append: false

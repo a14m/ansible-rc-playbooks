@@ -1,5 +1,6 @@
 ---
 - name: "Configure machine hostname"
+  become: true
   ansible.builtin.copy:
     dest: "/etc/hostname"
     mode: "0644"

@@ -1,5 +1,6 @@
 ---
 - name: "Ensure sudo installed"
+  become: true
   community.general.pacman:
     name: "sudo"
     state: present

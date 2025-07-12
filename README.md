@@ -38,6 +38,7 @@ cp distro-configure.yml.example distro-configure.yml
 ansible-galaxy install -r requirements.yml
 
 ansible-playbook distro-configure.yml \
+  --ask-become-pass \
   --limit wlan \
   --extra-vars '{"network_wifi_ssid":"<WIFI_SSID>", "network_wifi_pass":"<WIFI_PASS>"}'
 ```

@@ -1,11 +1,13 @@
 ---
 - name: "Update localtime"
+  become: true
   ansible.builtin.file:
     src: "/usr/share/zoneinfo/{{ locales_timezone }}"
     dest: "/etc/localtime"
     state: link
 
 - name: "Update locale.conf"
+  become: true
   ansible.builtin.copy:
     dest: "/etc/locale.conf"
     mode: "0640"
@@ -17,6 +19,7 @@
       TIME_STYLE={{ locales_conf.time_style }}
 
 - name: "Update locale.gen"
+  become: true
   ansible.builtin.lineinfile:
     dest: "/etc/locale.gen"
     mode: "0640"

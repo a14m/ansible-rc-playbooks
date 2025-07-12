@@ -1,5 +1,6 @@
 ---
 - name: "Ensure network_packages installed"
+  become: true
   community.general.pacman:
     name: "{{ network_packages }}"
     state: present
@@ -15,6 +16,7 @@
   tags: [required_for_boot]
 
 - name: "Ensure network_services enabled"
+  become: true
   ansible.builtin.service:
     name: "{{ item }}"
     enabled: true
@@ -24,6 +26,7 @@
   tags: [required_for_boot]
 
 - name: "Configure NetworkManager"
+  become: true
   tags: [required_for_boot]
   notify:
     - "Restart NetworkManager"

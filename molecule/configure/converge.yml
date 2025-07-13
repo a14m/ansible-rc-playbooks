@@ -2,6 +2,7 @@
 - name: Converge
   hosts: instance
   vars:
+    ansible_become_method: su
     username: test_user
     ssh_port: 1337
     user_public_keys:

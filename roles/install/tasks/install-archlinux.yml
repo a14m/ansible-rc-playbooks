@@ -53,7 +53,7 @@
     arch-chroot {{ install_root_path }} pacman -Syyu --noconfirm
   changed_when: true
 
-- name: "Ensure python is installed in chroot"
+- name: "Ensure python3 is installed in chroot"
   ansible.builtin.command:
     cmd: "arch-chroot {{ install_root_path }} pacman -S --noconfirm python3"
   changed_when: true

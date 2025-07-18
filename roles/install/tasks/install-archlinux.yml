@@ -6,10 +6,10 @@
 
 - name: "Generate fstab"
   ansible.builtin.shell:
-    cmd: "genfstab -U {{ install_root_path }} > {{ install_root_path }}/etc/fstab"
+    cmd: "genfstab -t PARTLABEL {{ install_root_path }} > {{ install_root_path }}/etc/fstab"
   changed_when: true
 
-- name: "Install bootclt"
+- name: "Run bootclt"
   ansible.builtin.command:
     cmd: "arch-chroot {{ install_root_path }} bootctl install"
   changed_when: true
@@ -25,18 +25,10 @@
     dest: "{{ item.dest }}"
     mode: "0644"
   with_items:
-    - src: loader.conf.j2
+    - src: "loader.conf.j2"
       dest: "{{ install_boot_path }}/loader/loader.conf"
-    - src: arch.conf.j2
-      dest: "{{ install_boot_path }}/loader/entries/arch.conf"
-
-- name: "Ensure ansible dependencies are installed on live environment"
-  community.general.pacman:
-    name:
-      - "python3"
-      - "python-pip"
-    state: present
-    update_cache: true
+    - src: "archlinux.conf.j2"
+      dest: "{{ install_boot_path }}/loader/entries/archlinux.conf"
 
 - name: "Configure pacman in chroot"
   ansible.builtin.copy:
@@ -52,6 +44,14 @@
     arch-chroot {{ install_root_path }} pacman-key --populate
     arch-chroot {{ install_root_path }} pacman -Syyu --noconfirm
   changed_when: true
+
+- name: "Ensure ansible dependencies are installed on live environment"
+  community.general.pacman:
+    name:
+      - "python3"
+      - "python-pip"
+    state: present
+    update_cache: true
 
 - name: "Ensure python3 is installed in chroot"
   ansible.builtin.command:

@@ -1,0 +1,7 @@
+title       Ubuntu 24.04 LTS ({{ install_kernel_version }})
+version     {{ install_kernel_version }}
+machine-id  {{ machine_id.stdout }}
+sort-key    ubuntu
+linux       /ubuntu/vmlinuz-{{ install_kernel_version }}
+initrd      /ubuntu/initrd.img-{{ install_kernel_version }}
+options     root=PARTLABEL={{ partition_root.name }} ro

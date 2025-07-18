@@ -1,0 +1,136 @@
+---
+- name: "Set distro_name"
+  ansible.builtin.set_fact:
+    distro_name: "{{ ansible_distribution | lower }}"
+
+- name: "Include {{ distro_name }} vars"
+  # noqa name[template]
+  ansible.builtin.include_vars: "{{ distro_name }}.yml"
+
+- name: "Ensure install dependencies are installed on live environment"
+  ansible.builtin.apt:
+    state: "present"
+    pkg:
+      - "debootstrap"
+      - "arch-install-scripts"
+      - "bash"
+
+- name: "Run debootstrap"
+  ansible.builtin.command:
+    cmd: "debootstrap {{ install_debian_distro }} {{ install_root_path }}"
+  changed_when: true
+
+- name: "Generate fstab"
+  ansible.builtin.shell:
+    cmd: "genfstab -t PARTLABEL {{ install_root_path }} > {{ install_root_path }}/etc/fstab"
+  changed_when: true
+
+- name: "Configure apt in chroot"
+  ansible.builtin.copy:
+    dest: "{{ item.dest }}"
+    mode: "0640"
+    content: "{{ item.content }}"
+  with_items:
+    - dest: "{{ install_root_path }}/etc/apt/preferences.d/ignored-package"
+      content: "{{ install_apt_ignored_preferences }}"
+    - dest: "{{ install_root_path }}/etc/apt/sources.list"
+      content: "{{ install_apt_sources }}"
+
+- name: "Ensure apt it updated in chroot"
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} apt-get update"
+  changed_when: true
+
+- name: "Get machine-id"
+  ansible.builtin.command:
+    cmd: "cat {{ install_root_path }}/etc/machine-id"
+  changed_when: false
+  register: machine_id
+
+# The linux-image-generic kernel fails to create the required symlinks in the /boot partition
+# (vfat symlinks isn't permitted)
+# This solves the issue by making the files in /boot not symlinks
+# Ref: https://askubuntu.com/a/1527683
+# Ref: https://askubuntu.com/q/1275595
+# Ref: https://manpages.debian.org/testing/linux-base/kernel-img.conf.5.en.html
+- name: "Configure kernel-img.conf in chroot"
+  ansible.builtin.copy:
+    dest: "{{ install_root_path }}/etc/kernel-img.conf"
+    mode: "0640"
+    content: |
+      do_symlinks = no
+
+- name: "Configure kernel postinst.d in chroot"
+  ansible.builtin.copy:
+    dest: "{{ install_root_path }}/etc/kernel/postinst.d/zz-systemd-boot-cleanup"
+    mode: "0755"
+    content: |
+      #!/bin/sh
+      set -e
+      esp_path=$(bootctl -p)
+      # remove default generate bootloader config for machine-id
+      rm $esp_path/loader/entries/{{ machine_id.stdout }}-*.conf
+      rm -rf $esp_path/{{ machine_id.stdout }}
+      # create distro specific boot directory
+      mkdir -p $esp_path/{{ distro_name }}
+      # move newly installed kernel in the new distro specific directory
+      mv $esp_path/*-generic $esp_path/{{ distro_name }}/
+
+- name: "Ensure systemd-boot is installed in chroot"
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} apt-get install -y systemd-boot"
+  changed_when: true
+
+- name: "Install linux HWE kernel in chroot"
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} apt-get install -y {{ install_kernel_pkg }}"
+  changed_when: true
+
+- name: "Get kernel version"
+  # Get the latest installed kernel version from the kernel image files in the boot/distro directory
+  ansible.builtin.shell: |
+    set -eo pipefail
+    ls -lar {{ install_boot_path }}/{{ distro_name }}/initrd.img-* | awk -F '/' '{print $NF}' | cut -c 12-
+  changed_when: false
+  args:
+    executable: /usr/bin/bash
+  register: kernel_version
+
+- name: "Run bootclt in chroot"
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} bootctl install"
+  changed_when: true
+
+- name: "Ensure systemd-boot-update is enabled in chroot"
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} systemctl enable systemd-boot-update"
+  changed_when: true
+
+- name: "Template systemd-boot files"
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  with_items:
+    - src: "loader.conf.j2"
+      dest: "{{ install_boot_path }}/loader/loader.conf"
+    - src: "{{ distro_name }}.conf.j2"
+      dest: "{{ install_boot_path }}/loader/entries/{{ distro_name }}.conf"
+
+- name: "Install {{ install_distro_variant }} in chroot"
+  # noqa name[template]
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} apt-get install -y {{ install_distro_variant }}"
+  changed_when: true
+
+- name: "Ensure ansible dependencies are installed on live environment"
+  ansible.builtin.apt:
+    state: "present"
+    pkg:
+      - "python3"
+      - "python3-pip"
+
+- name: "Ensure python3 is installed in chroot"
+  ansible.builtin.command:
+    cmd: "arch-chroot {{ install_root_path }} apt-get install -y python3"
+  changed_when: true

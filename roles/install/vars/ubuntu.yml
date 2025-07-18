@@ -1,0 +1,18 @@
+---
+install_debian_distro: "noble" # => Ubuntu 24.04 LTS
+install_distro_variant: "ubuntu-desktop"
+install_kernel_pkg: "linux-generic-hwe-24.04"
+
+install_apt_ignored_preferences: |
+  Package: grub-common grub2-common grub-pc grub-pc-bin grub-gfxpayload-lists
+  Pin: release *
+  Pin-Priority: -1
+
+  Package: snapd cloud-init landscape-common popularity-contest ubuntu-advantage-tools
+  Pin: release *
+  Pin-Priority: -1
+
+install_apt_sources: |
+  deb http://archive.ubuntu.com/ubuntu {{ install_debian_distro }} main universe
+  deb http://archive.ubuntu.com/ubuntu {{ install_debian_distro }}-security main universe
+  deb http://archive.ubuntu.com/ubuntu {{ install_debian_distro }}-updates main universe

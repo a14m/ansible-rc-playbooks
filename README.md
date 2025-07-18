@@ -15,6 +15,7 @@ Ansible roles and playbooks to install different distros and configure `.rc`.
 ### Boot distro live image
 
 - [Arch Linux](./archlinux.md)
+- [Debian Ubuntu](./ubuntu.md)
 
 ### Run
 

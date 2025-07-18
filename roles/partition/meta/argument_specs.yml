@@ -95,12 +95,10 @@ argument_specs:
             default: ""
           dev:
             type: "str"
-            description: "Partition device path (ex: /dev/nvme0n1p3)"
-            required: true
+            description: "Partition device path (ex: /dev/nvme0n1p3) ignore for partitions not used in playbook"
           mount_path:
             type: "str"
-            description: "Partition mount path (ex: /mnt/home)"
-            required: true
+            description: "Partition mount path (ex: /mnt/home), ignore for partitions not used in playbook"
           fstab_opts:
             type: "str"
             description: "Options used for mounting (fstab options)"

@@ -1,3 +1,1 @@
 .ansible
-distro-*.yml
-!distro-*.yml.example

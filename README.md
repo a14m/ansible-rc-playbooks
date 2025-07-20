@@ -10,36 +10,33 @@ Ansible roles and playbooks to install different distros and configure `.rc`.
 [sshpass]: https://man.freebsd.org/cgi/man.cgi?query=sshpass
 [ansible]: https://docs.ansible.com/ansible/latest/index.html
 
-## Playbook: distro-install
-
-### Boot distro live image
+## Boot distro live image
 
 - [Arch Linux](./archlinux.md)
 - [Debian Ubuntu](./ubuntu.md)
 
-### Run
+## Playbook: distro-install
+
+- Follow the pre-install guides for desired distro in "Boot distro live image"
+- Install ansible required dependencies
+- Run the `distro-install` playbook
 
 ```bash
-cp distro-install.yml.example distro-install.yml
-
-# Update distro-install.yml vars
-
 ansible-galaxy install -r requirements.yml
 
-ansible-playbook distro-install.yml \
-  --ask-pass \
-  --limit live_environment
+ansible-playbook distro-install.yml --ask-pass
 ```
 
 ## Playbook: distro-configure
 
+- Copy the example distro file configuration and update the desired host_vars file
+- Install ansible required dependencies
+- Run the `distro-configure` playbook
+
 ```bash
-cp distro-configure.yml.example distro-configure.yml
+cp host_vars/*.example host_vars/
 
 ansible-galaxy install -r requirements.yml
 
-ansible-playbook distro-configure.yml \
-  --ask-become-pass \
-  --limit wlan \
-  --extra-vars '{"network_wifi_ssid":"<WIFI_SSID>", "network_wifi_pass":"<WIFI_PASS>"}'
+ansible-playbook distro-configure.yml --ask-become-pass
 ```

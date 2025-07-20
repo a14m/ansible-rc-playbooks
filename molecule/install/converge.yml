@@ -4,7 +4,7 @@
   gather_facts: true
   vars:
     rc_playbooks_dir: "{{ playbook_dir }}/../../"
-    hostname: "archlinux.local"
+    hostname: "${MOLECULE_DISTRO}.local"
     partition_wipe: false
     partition_disk: "{{ test_device }}"
     partition_boot:
@@ -29,7 +29,7 @@
       mount_path: "none"
     partition_root:
       num: 3
-      name: "arch-root"
+      name: "root"
       part_start: "2.0GiB"
       part_end: "100%"
       fstype: "ext4"

@@ -1,0 +1,6 @@
+---
+- name: Distro Configure
+  hosts:
+    - archlinux.local
+  roles:
+    - role: configure

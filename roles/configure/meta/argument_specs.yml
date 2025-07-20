@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    options:
+      hostname:
+        type: "str"
+        default: "{{ inventory_hostname }}"
+        description: "The distro linux hostname to be configured"
+      configure_roles:
+        type: "list"
+        required: true
+        description: "The list of roles to configure the hostname"
+        elements: "str"

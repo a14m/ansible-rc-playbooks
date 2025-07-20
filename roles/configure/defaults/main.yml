@@ -1,0 +1,3 @@
+---
+# noqa var-naming[no-role-prefix]
+hostname: "{{ inventory_hostname }}"

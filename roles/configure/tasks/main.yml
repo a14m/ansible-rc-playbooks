@@ -1,0 +1,11 @@
+---
+- name: "Show hostname"
+  ansible.builtin.debug:
+    msg: "Run hostname: {{ hostname }}"
+  tags: [required_for_boot]
+
+- name: "Include roles for {{ hostname }}"
+  ansible.builtin.include_role:
+    name: "{{ item }}"
+  with_items: "{{ configure_roles }}"
+  tags: [required_for_boot]

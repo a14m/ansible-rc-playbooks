@@ -62,6 +62,8 @@ jobs:
         molecule_distro:
           - distro: archlinux
             command: "/usr/sbin/init"
+          - distro: ubuntu
+            command: ""
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

@@ -4,6 +4,11 @@
   when: ansible_os_family == "Archlinux"
   tags: [required_for_boot]
 
+- name: "Install debian packages"
+  ansible.builtin.include_tasks: "install-debian.yml"
+  when: ansible_os_family == "Debian"
+  tags: [required_for_boot]
+
 - name: "Setting user_groups"
   ansible.builtin.set_fact:
     sudo_group: "sudo"

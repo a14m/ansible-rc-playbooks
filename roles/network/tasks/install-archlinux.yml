@@ -1,0 +1,7 @@
+---
+- name: "Ensure network_packages installed"
+  become: true
+  community.general.pacman:
+    name: "{{ network_packages }}"
+    state: "present"
+  tags: [required_for_boot]

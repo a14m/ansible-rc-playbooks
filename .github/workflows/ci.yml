@@ -24,7 +24,7 @@ jobs:
   playbook-install:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         molecule_distro:
           - distro: archlinux
@@ -57,7 +57,7 @@ jobs:
   playbook-configure:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         molecule_distro:
           - distro: archlinux

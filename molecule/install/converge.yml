@@ -3,7 +3,7 @@
   hosts: instance
   gather_facts: true
   vars:
-    rc_playbooks_dir: "{{ playbook_dir }}/../../"
+    rc_playbooks_dir: "{{ playbook_dir | dirname | dirname }}"
     hostname: "{{ test_hostname }}"
     partition_wipe: false
     partition_disk: "{{ test_device }}"

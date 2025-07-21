@@ -13,8 +13,9 @@ jobs:
         run: pip3 install yamllint ansible-lint
       - name: Copy example files
         run: |
-          # Copy host_vars distro.yml.example files to distro.yml
+          # Copy host_vars and group_vars (from the .example files)
           for f in host_vars/*.example; do mv "$f" "$(echo "$f" | sed s/\.example//)"; done
+          for f in group_vars/*.example; do mv "$f" "$(echo "$f" | sed s/\.example//)"; done
       - name: Run
         run: |
           yamllint .
@@ -39,8 +40,9 @@ jobs:
         run: pip3 install ansible molecule molecule-plugins[docker]
       - name: Copy example files
         run: |
-          # Copy host_vars distro.yml.example files to distro.yml
+          # Copy host_vars and group_vars (from the .example files)
           for f in host_vars/*.example; do cp "$f" "$(echo "$f" | sed s/\.example//)"; done
+          for f in group_vars/*.example; do mv "$f" "$(echo "$f" | sed s/\.example//)"; done
       - name: Run
         env:
           PY_COLORS: 1
@@ -69,8 +71,9 @@ jobs:
         run: pip3 install ansible molecule molecule-plugins[podman]
       - name: Copy example files
         run: |
-          # Copy host_vars distro.yml.example files to distro.yml
+          # Copy host_vars and group_vars (from the .example files)
           for f in host_vars/*.example; do cp "$f" "$(echo "$f" | sed s/\.example//)"; done
+          for f in group_vars/*.example; do mv "$f" "$(echo "$f" | sed s/\.example//)"; done
       - name: Run
         env:
           PY_COLORS: 1

@@ -36,6 +36,8 @@ provisioner:
       fact_caching_connection: /tmp/facts_cache
       fact_caching_timeout: 600
       callback_result_format: yaml
+    ssh_connection:
+      pipelining: true
   playbooks:
     converge: converge.yml
 verifier:

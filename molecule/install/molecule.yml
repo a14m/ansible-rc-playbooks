@@ -23,7 +23,12 @@ platforms:
     cgroupns_mode: host
 provisioner:
   name: ansible
+  inventory:
+    links:
+      host_vars: "../../host_vars/"
+      group_vars: "../../group_vars/"
   env:
+    MOLECULE_DISTRO: "${MOLECULE_DISTRO:-archlinux}"
     ANSIBLE_ROLES_PATH: "../../roles"
   config_options:
     defaults:

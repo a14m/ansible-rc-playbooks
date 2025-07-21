@@ -54,6 +54,7 @@
       ansible-playbook /opt/ansible-playbooks/distro-configure.yml
         --limit {{ hostname }}
         --extra-vars '{"hostname":"{{ hostname }}"}'
+        --extra-vars "@/opt/ansible-playbooks/host_vars/{{ hostname }}.yml"
         --tags 'required_for_boot'
   register: playbook
   changed_when: true

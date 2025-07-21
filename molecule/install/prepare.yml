@@ -2,6 +2,10 @@
 - name: Prepare
   hosts: localhost
   gather_facts: true
+  vars:
+    distro_hostname_mapping:
+      archlinux: "archlinux.local"
+      ubuntu: "ubuntu.local"
   tasks:
     - name: "Create virtual disk image"
       become: true
@@ -18,19 +22,25 @@
       register: loop_device
       changed_when: true
 
-    - name: "Set test_device"
+    - name: "Set test facts"
       ansible.builtin.set_fact:
         test_device: "{{ loop_device.stdout }}"
+        test_hostname: "{{ distro_hostname_mapping[lookup('ansible.builtin.env', 'MOLECULE_DISTRO')] }}"
         cacheable: true
 
-    - name: "Show test_device"
+    - name: "Show test info"
       ansible.builtin.debug:
-        msg: "{{ test_device }}"
+        msg: "{{ item.name }}: {{ item.value }}"
+      with_items:
+        - name: "Test Device"
+          value: "{{ test_device }}"
+        - name: "Test Hostname;"
+          value: "{{ test_hostname }}"
 
-    - name: "Prepare distro-configure.yml"
+    - name: "Prepare host_vars/distro.yml"
       ansible.builtin.copy:
-        src: "../../distro-configure.yml.example"
-        dest: "../../distro-configure.yml"
+        src: "../../host_vars/{{ test_hostname }}.yml.example"
+        dest: "../../host_vars/{{ test_hostname }}.yml"
         remote_src: false
         force: false
         mode: "0644"

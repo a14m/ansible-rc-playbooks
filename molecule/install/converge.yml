@@ -4,7 +4,7 @@
   gather_facts: true
   vars:
     rc_playbooks_dir: "{{ playbook_dir }}/../../"
-    hostname: "${MOLECULE_DISTRO}.local"
+    hostname: "{{ test_hostname }}"
     partition_wipe: false
     partition_disk: "{{ test_device }}"
     partition_boot:
@@ -38,9 +38,10 @@
     partition_extras: []
 
   pre_tasks:
-    - name: "Get test_device"
+    - name: "Get test facts"
       ansible.builtin.set_fact:
         test_device: "{{ hostvars['localhost']['test_device'] }}"
+        test_hostname: "{{ hostvars['localhost']['test_hostname'] }}"
 
   roles:
     - role: partition

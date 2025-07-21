@@ -130,7 +130,7 @@
       - "python3"
       - "python3-pip"
 
-- name: "Ensure python3 is installed in chroot"
+- name: "Ensure ansible dependencies are installed in chroot"
   ansible.builtin.command:
     cmd: "arch-chroot {{ install_root_path }} apt-get install -y python3"
   changed_when: true

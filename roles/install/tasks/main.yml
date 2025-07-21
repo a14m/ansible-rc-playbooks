@@ -21,20 +21,6 @@
     state: "present"
     break_system_packages: true
 
-- name: "Create /etc/ansible directory on live environment"
-  ansible.builtin.file:
-    path: "/etc/ansible"
-    mode: "0640"
-    state: "directory"
-
-- name: "Configure ansible hosts on live environment"
-  ansible.builtin.copy:
-    dest: "/etc/ansible/hosts"
-    mode: "0640"
-    content: |
-      [{{ hostname }}]
-      {{ install_root_path }} ansible_connection=chroot ansible_chroot_exe=arch-chroot
-
 - name: "Copy playbooks on live environment"
   block:
     - name: "Archive playbook on localhost"
@@ -62,6 +48,18 @@
         list_files: false
         remote_src: false
 
+- name: "Update ansible (chroot) host in inventory"
+  ansible.builtin.copy:
+    dest: "/opt/ansible-playbooks/inventory/hosts.yml"
+    mode: "0640"
+    content: |
+      chroot:
+        vars:
+          ansible_connection: "chroot"
+          ansible_chroot_exe: "arch-chroot"
+        hosts:
+          {{ install_root_path }}:
+
 - name: "Download playbook dependencies on live environment"
   ansible.builtin.command:
     cmd: "ansible-galaxy install -r /opt/ansible-playbooks/requirements.yml"
@@ -70,11 +68,12 @@
 - name: "Run configure playbook locally using chroot connection"
   ansible.builtin.command:
     cmd: |
-      ansible-playbook /opt/ansible-playbooks/distro-configure.yml
-        --limit {{ hostname }}
+      ansible-playbook distro-configure.yml
+        --limit "chroot"
         --extra-vars '{"hostname":"{{ hostname }}"}'
         --extra-vars "@/opt/ansible-playbooks/host_vars/{{ hostname }}.yml"
         --tags 'required_for_boot'
+    chdir: "/opt/ansible-playbooks"
   register: playbook
   changed_when: true
 

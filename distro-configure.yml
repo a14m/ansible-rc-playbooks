@@ -1,5 +1,7 @@
 ---
 - name: Distro Configure
-  hosts: vlan
+  hosts:
+    - vlan
+    - chroot
   roles:
     - role: configure

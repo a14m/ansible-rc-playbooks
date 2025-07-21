@@ -1,6 +1,5 @@
 ---
 - name: Distro Configure
-  hosts:
-    - archlinux.local
+  hosts: vlan
   roles:
     - role: configure

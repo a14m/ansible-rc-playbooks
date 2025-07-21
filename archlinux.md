@@ -7,7 +7,7 @@
 - boot the `archiso` live image from a bootable USB.
 - connect to wireless network (if not connected via LAN).
 - set root password (which will be asked to run the install playbook).
-- set the hostname to `archiso.local`
+- set the hostname to `archlinuxiso.local`
 - run the `distro-install` playbook on the ansible controller
 
 **Example:**
@@ -15,6 +15,6 @@
 ```bash
 passwd
 iwctl --passphrase <PASSPHRASE> station wlan0 connect <SSID>
-hostnamectl set-hostname archiso.local
+hostnamectl set-hostname archlinuxiso.local
 systemctl restart systemd-resolved
 ```

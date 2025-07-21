@@ -1,8 +1,6 @@
 ---
 - name: Distro Install
-  hosts:
-    - archiso.local
-    - ubuntuiso.local
+  hosts: live_environments
   roles:
     - role: partition
     - role: install

@@ -13,11 +13,8 @@ jobs:
         run: pip3 install yamllint ansible-lint
       - name: Copy example files
         run: |
-          # Disable git-crypt for testing
-          rm .gitattributes
           # Copy host_vars distro.yml.example files to distro.yml
           for f in host_vars/*.example; do mv "$f" "$(echo "$f" | sed s/\.example//)"; done
-          cp distro-configure.yml.example distro-configure.yml
       - name: Run
         run: |
           yamllint .
@@ -40,6 +37,10 @@ jobs:
           python-version: "3.x"
       - name: Install dependencies
         run: pip3 install ansible molecule molecule-plugins[docker]
+      - name: Copy example files
+        run: |
+          # Copy host_vars distro.yml.example files to distro.yml
+          for f in host_vars/*.example; do cp "$f" "$(echo "$f" | sed s/\.example//)"; done
       - name: Run
         env:
           PY_COLORS: 1
@@ -66,6 +67,10 @@ jobs:
           python-version: "3.x"
       - name: Install dependencies
         run: pip3 install ansible molecule molecule-plugins[podman]
+      - name: Copy example files
+        run: |
+          # Copy host_vars distro.yml.example files to distro.yml
+          for f in host_vars/*.example; do cp "$f" "$(echo "$f" | sed s/\.example//)"; done
       - name: Run
         env:
           PY_COLORS: 1

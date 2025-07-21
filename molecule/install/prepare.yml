@@ -36,11 +36,3 @@
           value: "{{ test_device }}"
         - name: "Test Hostname;"
           value: "{{ test_hostname }}"
-
-    - name: "Prepare host_vars/distro.yml"
-      ansible.builtin.copy:
-        src: "../../host_vars/{{ test_hostname }}.yml.example"
-        dest: "../../host_vars/{{ test_hostname }}.yml"
-        remote_src: false
-        force: false
-        mode: "0644"

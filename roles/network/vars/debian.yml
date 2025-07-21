@@ -1,0 +1,10 @@
+---
+network_packages:
+  - "dhcpcd"
+  - "avahi-daemon"
+  - "network-manager"
+
+network_services:
+  - "dhcpcd"
+  - "avahi-daemon"
+  - "NetworkManager"

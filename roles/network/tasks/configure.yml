@@ -1,11 +1,4 @@
 ---
-- name: "Ensure network_packages installed"
-  become: true
-  community.general.pacman:
-    name: "{{ network_packages }}"
-    state: present
-  tags: [required_for_boot]
-
 - name: "(chroot): Ensure network_services enabled"
   # noqa: command-instead-of-module intentional isnide chroot
   ansible.builtin.command:

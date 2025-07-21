@@ -1,3 +1,7 @@
 ---
 # noqa var-naming[no-role-prefix]
 hostname: "{{ inventory_hostname }}"
+# noqa var-naming[no-role-prefix]
+group_roles: []
+# noqa var-naming[no-role-prefix]
+host_roles: []

@@ -37,6 +37,16 @@
     creates: "/etc/ssh/ssh_host_ed25519_key"
   tags: [required_for_boot]
 
+- name: "Configure sshd_config"
+  become: true
+  ansible.builtin.copy:
+    dest: "/etc/ssh/sshd_config"
+    mode: "0640"
+    content: |
+      Include /etc/ssh/sshd_config.d/*.conf
+      AuthorizedKeysFile    .ssh/authorized_keys
+      Subsystem     sftp    /usr/lib/ssh/sftp-server
+
 - name: "Configure ssh defaults"
   become: true
   ansible.builtin.copy:
@@ -47,13 +57,14 @@
       KbdInteractiveAuthentication no
       UsePAM no         # default is yes
       PrintMotd yes     # default is no
+
       # Host key configurations
       HostKey /etc/ssh/ssh_host_rsa_key
       HostKey /etc/ssh/ssh_host_ecdsa_key
       HostKey /etc/ssh/ssh_host_ed25519_key
   tags: [required_for_boot]
 
-- name: "Configure authentication policy"
+- name: "Configure ssh authentication policy"
   become: true
   ansible.builtin.copy:
     dest: "/etc/ssh/sshd_config.d/99-auth-policy.conf"

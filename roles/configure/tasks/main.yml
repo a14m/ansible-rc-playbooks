@@ -6,6 +6,8 @@
 
 - name: "Include roles for {{ hostname }}"
   ansible.builtin.include_role:
-    name: "{{ item }}"
+    name: "{{ role }}"
   with_items: "{{ (group_roles + host_roles) | unique }}"
+  loop_control:
+    loop_var: role
   tags: [required_for_boot]

@@ -43,25 +43,22 @@
     dest: "/etc/ssh/sshd_config"
     mode: "0640"
     content: |
-      Include /etc/ssh/sshd_config.d/*.conf
-      AuthorizedKeysFile    .ssh/authorized_keys
-      Subsystem     sftp    /usr/lib/ssh/sftp-server
-
-- name: "Configure ssh defaults"
-  become: true
-  ansible.builtin.copy:
-    dest: "/etc/ssh/sshd_config.d/99-defaults.conf"
-    mode: "0640"
-    content: |
-      # sshd_config defaults on Arch Linux
-      KbdInteractiveAuthentication no
-      UsePAM no         # default is yes
-      PrintMotd yes     # default is no
+      KbdInteractiveAuthentication no   # default installation is no
+      UsePAM no                         # default installation is yes
+      PrintMotd yes                     # default installation is no
 
       # Host key configurations
       HostKey /etc/ssh/ssh_host_rsa_key
       HostKey /etc/ssh/ssh_host_ecdsa_key
       HostKey /etc/ssh/ssh_host_ed25519_key
+
+      # Default sshd_config
+      AuthorizedKeysFile    .ssh/authorized_keys
+      Subsystem     sftp    /usr/lib/ssh/sftp-server
+      Include /etc/ssh/sshd_config.d/*.conf
+  notify:
+    - "Reload systemd"
+    - "Restart ssh"
   tags: [required_for_boot]
 
 - name: "Configure ssh authentication policy"
@@ -69,7 +66,7 @@
   ansible.builtin.copy:
     dest: "/etc/ssh/sshd_config.d/99-auth-policy.conf"
     mode: "0640"
-    validate: "sshd -T -f %s"
+    validate: "{{ ansible_is_chroot | lower }} && true || sshd -T -f %s"
     content: |
       Port {{ ssh_port }}
       PasswordAuthentication no
@@ -80,7 +77,6 @@
       GSSAPIAuthentication no
       X11Forwarding no
   notify:
-    - "Reload systemd"
     - "Restart ssh"
   tags: [required_for_boot]
 
@@ -89,7 +85,7 @@
   ansible.builtin.copy:
     dest: "/etc/ssh/sshd_config.d/99-allowed-users.conf"
     mode: "0640"
-    validate: "sshd -T -f %s"
+    validate: "{{ ansible_is_chroot | lower }} && true || sshd -T -f %s"
     content: |
       AllowUsers {{ username }}
   notify:

@@ -5,6 +5,14 @@
     daemon_reload: true
   when: not ansible_is_chroot
 
+
+- name: "Validate ssh"
+  become: true
+  ansible.builtin.command:
+    cmd: "sshd -T -f /etc/ssh/sshd_config"
+  changed_when: false
+  when: not ansible_is_chroot
+
 - name: "Restart ssh"
   become: true
   ansible.builtin.service:

@@ -57,6 +57,7 @@
       Subsystem     sftp    /usr/lib/ssh/sftp-server
       Include /etc/ssh/sshd_config.d/*.conf
   notify:
+    - "Validate ssh"
     - "Reload systemd"
     - "Restart ssh"
   tags: [required_for_boot]
@@ -66,7 +67,6 @@
   ansible.builtin.copy:
     dest: "/etc/ssh/sshd_config.d/99-auth-policy.conf"
     mode: "0640"
-    validate: "{{ ansible_is_chroot | lower }} && true || sshd -T -f %s"
     content: |
       Port {{ ssh_port }}
       PasswordAuthentication no
@@ -77,6 +77,7 @@
       GSSAPIAuthentication no
       X11Forwarding no
   notify:
+    - "Validate ssh"
     - "Restart ssh"
   tags: [required_for_boot]
 
@@ -85,9 +86,9 @@
   ansible.builtin.copy:
     dest: "/etc/ssh/sshd_config.d/99-allowed-users.conf"
     mode: "0640"
-    validate: "{{ ansible_is_chroot | lower }} && true || sshd -T -f %s"
     content: |
       AllowUsers {{ username }}
   notify:
+    - "Validate ssh"
     - "Restart ssh"
   tags: [required_for_boot]

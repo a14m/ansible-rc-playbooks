@@ -10,4 +10,4 @@
     - role: network
     - role: ssh
     - role: user
-    - role: locales
+    - role: settings

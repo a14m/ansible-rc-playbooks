@@ -1,9 +1,9 @@
 ---
 dependencies: []
 galaxy_info:
-  role_name: locales
+  role_name: settings
   author: a14m
-  description: "Configure the linux distro locales"
+  description: "Configure the linux distro settings"
   company: "kartoffeln.work GmbH."
   license: "license MIT"
   min_ansible_version: "2.18"
@@ -11,3 +11,6 @@ galaxy_info:
     - name: ArchLinux
       versions:
         - all
+    - name: Ubuntu
+      versions:
+        - noble

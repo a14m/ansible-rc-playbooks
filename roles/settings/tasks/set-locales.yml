@@ -2,7 +2,7 @@
 - name: "Update localtime"
   become: true
   ansible.builtin.file:
-    src: "/usr/share/zoneinfo/{{ locales_timezone }}"
+    src: "/usr/share/zoneinfo/{{ settings_timezone }}"
     dest: "/etc/localtime"
     state: link
 
@@ -10,20 +10,20 @@
   become: true
   ansible.builtin.copy:
     dest: "/etc/locale.conf"
-    mode: "0640"
+    mode: "0644"
     content: |
-      LANG={{ locales_conf.lang }}
-      LANGUAGE={{ locales_conf.language }}
-      LC_COLLATE={{ locales_conf.lc_collate }}
-      LC_TIME={{ locales_conf.lc_time }}
-      TIME_STYLE={{ locales_conf.time_style }}
+      LANG={{ settings_locales_lang }}
+      LANGUAGE={{ settings_locales_language }}
+      LC_COLLATE={{ settings_locales_lc_collate }}
+      LC_TIME={{ settings_locales_lc_time }}
+      TIME_STYLE={{ settings_locales_time_style }}
 
 - name: "Update locale.gen"
   become: true
   ansible.builtin.lineinfile:
     dest: "/etc/locale.gen"
-    mode: "0640"
+    mode: "0644"
     regexp: "^#{{ item }}"
     line: "{{ item }}"
-  with_items: "{{ locales_list }}"
+  with_items: "{{ settings_locales }}"
   notify: "Run locale-gen"

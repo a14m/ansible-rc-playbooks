@@ -74,7 +74,7 @@
 
     - name: "Configure wifi connection"
       ansible.builtin.template:
-        src: wifi-connection.nmconnection.j2
+        src: "wifi-connection.nmconnection.j2"
         dest: "/etc/NetworkManager/system-connections/{{ network_wifi_ssid }}.nmconnection"
         mode: "0600"
         owner: "root"

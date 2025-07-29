@@ -1,48 +1,16 @@
 ---
-- name: "Configure enabled password policy"
+- name: "Configure archlinux password policy"
   become: true
-  when: settings_pw_policy_enabled
-  block:
-    - name: "Configure pam_pwquality"
-      ansible.builtin.lineinfile:
-        dest: "/etc/pam.d/common-password"
-        mode: "0644"
-        regexp: '^(#)?password[\s]+requisite[\s]+pam_pwquality\.so'
-        line: "password requisite pam_pwquality.so
-          retry=3
-          difok={{ settings_pw_policy_difok }}
-          minlen={{ settings_pw_policy_minlen }}
-          dcredit={{ settings_pw_policy_dcredit }}
-          ucredit={{ settings_pw_policy_ucredit }}
-          ocredit={{ settings_pw_policy_ocredit }}
-          lcredit={{ settings_pw_policy_lcredit }}
-          minclass={{ settings_pw_policy_minclass }}
-          maxrepeat={{ settings_pw_policy_maxrepeat }}
-          maxclassrepeat={{ settings_pw_policy_maxclassrepeat }}
-          gecoscheck={{ settings_pw_policy_gecoscheck }}"
+  ansible.builtin.template:
+    src: "archlinux-pam-pw.j2"
+    dest: "/etc/pam.d/system-auth"
+    mode: "0644"
+  when: ansible_os_family == "Archlinux"
 
-    - name: "Configure pam_unix"
-      ansible.builtin.lineinfile:
-        dest: "/etc/pam.d/common-password"
-        mode: "0644"
-        regexp: '^password[\s]+\[success=\d\sdefault=\w+\][\s]+pam_unix\.so'
-        line: "password [success=2 default=ignore] pam_unix.so obsecure sha512 minlen={{ settings_pw_policy_minlen }}"
-
-
-- name: "Configure disabled password policy"
+- name: "Configure debian password policy"
   become: true
-  when: not settings_pw_policy_enabled
-  block:
-    - name: "Configure pam_pwquality"
-      ansible.builtin.lineinfile:
-        dest: "/etc/pam.d/common-password"
-        mode: "0644"
-        regexp: '^password[\s]+requisite[\s]+pam_pwquality\.so'
-        line: "#password requisite pam_pwquality.so"
-
-    - name: "Configure pam_unix"
-      ansible.builtin.lineinfile:
-        dest: "/etc/pam.d/common-password"
-        mode: "0644"
-        regexp: '^password[\s]+\[success=\d\sdefault=\w+\][\s]+pam_unix\.so'
-        line: "password [success=2 default=ignore] pam_unix.so obsecure sha512"
+  ansible.builtin.template:
+    src: "debian-pam-pw.j2"
+    dest: "/etc/pam.d/common-password"
+    mode: "0644"
+  when: ansible_os_family == "Debian"

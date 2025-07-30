@@ -3,10 +3,19 @@
 settings_locales:
   - "en_US.UTF-8 UTF-8"
 settings_locales_lang: "en_US.UTF-8"
-settings_locales_language: "en_US.UTF-8"
-settings_locales_lc_time: "en_DK.UTF-8"
-settings_locales_time_style: "iso"
+settings_locales_language: "en_US:en:C"
+settings_locales_lc_type: "en_US.UTF-8"
+settings_locales_lc_numeric: "en_US.UTF-8"
+settings_locales_lc_time: "C.UTF-8"
 settings_locales_lc_collate: "C.UTF-8"
+settings_locales_lc_monetary: "C.UTF-8"
+settings_locales_lc_messages: "en_US.UTF-8"
+settings_locales_lc_paper: "en_US.UTF-8"
+settings_locales_lc_name: "en_US.UTF-8"
+settings_locales_lc_address: "en_US.UTF-8"
+settings_locales_lc_telephone: "en_US.UTF-8"
+settings_locales_lc_measurement: "C.UTF-8"
+settings_locales_lc_identification: "en_US.UTF-8"
 
 # Timezone
 settings_timezone: "UTC"

@@ -1,5 +1,6 @@
 ---
 - name: Distro Configure
+  gather_facts: true
   hosts:
     - vlan
     - chroot

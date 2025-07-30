@@ -3,13 +3,13 @@
 - Download [ubuntu](https://ubuntu.com/download/alternative-downloads)
 - Format the usb
 - Unmount disk (on MacOS ex. `diskutil unmountDisk /dev/diskX`)
-- create bootable image from iso `sudo dd if=/path/to/image.iso of=/dev/diskX bs=4M status=progress`
-- boot the `ubuntu` live image from a bootable USB
-- connect to wireless network (if not connected via LAN)
-- set root password (which will be asked to run the install playbook)
-- set the hostname to `ubuntuiso.local`
-- install and configure ssh
-- install `debootstrap`
+- Create bootable image from iso `sudo dd if=/path/to/image.iso of=/dev/diskX bs=4M status=progress`
+- Boot the `ubuntu` live image from a bootable USB
+- Connect to wireless network (if not connected via LAN)
+- Set root password (which will be asked to run the install playbook)
+- Set the hostname to `ubuntuiso.local`
+- Install and configure ssh
+- Install `debootstrap`
 
 **Example:**
 
@@ -36,5 +36,5 @@ systemctl restart ssh
 On the ansible controller:
 
 - `cp host_vars/ubuntuiso.local.example host_vars/ubuntuiso.local`
-- update the `host_vars/ubuntuiso.local` file
-- run the `distro-install` playbook on the ansible controller
+- Update the `host_vars/ubuntuiso.local` file
+- Run the `distro-install` playbook on the ansible controller
